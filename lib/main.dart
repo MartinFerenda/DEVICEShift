@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 
-void main() {
+import 'common/preferences/app_preferences.dart';
+
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  await AppPreferences.init();
   runApp(const MyApp());
 }
 
