@@ -23,7 +23,7 @@ class OffsetDB implements OffsetRepository{
   }
 
   @override
-  Future<int> insertAllMeasuredOffsets (List<Offset> measuredOffsets, int measurementId) async {
+  Future<int> insertAllMeasuredOffsets (List<MeasuredOffset> measuredOffsets, int measurementId) async {
     return await _database.transaction((transaction) async {
       for (var offset in measuredOffsets) {
         await transaction.insert(tableName, {
@@ -47,12 +47,12 @@ class OffsetDB implements OffsetRepository{
   }
 
   @override
-  Future<List<Offset>> getOffsetsForMeasurement(int measurementId) async {
+  Future<List<MeasuredOffset>> getOffsetsForMeasurement(int measurementId) async {
     final result = await _database.query(
       tableName,
       where: 'measurementId = ?',
       whereArgs: [measurementId],
     );
-    return result.map((row) => Offset.fromExternalModel(row)).toList();
+    return result.map((row) => MeasuredOffset.fromExternalModel(row)).toList();
   }
 }
