@@ -1,18 +1,30 @@
 import 'dart:async';
+import 'package:device_shift/common/database/offset_db.dart';
 import 'package:device_shift/feature/vibration_measurement/data/models/offset.dart';
+import 'package:device_shift/feature/vibration_measurement/domain/measurement_viewmodel.dart';
 import 'package:device_shift/feature/vibration_measurement/presentation/enums/measuring_state.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../common/database/database_service.dart';
+import '../../../../common/database/measurement_db.dart';
+
 class MeasurementScreen extends StatefulWidget {
-  const MeasurementScreen({super.key});
+  final VoidCallback onNavigateToThird;
+  const MeasurementScreen({required this.onNavigateToThird, super.key});
 
   @override
   _MeasurementScreenState createState() => _MeasurementScreenState();
 }
 
 class _MeasurementScreenState extends State<MeasurementScreen> {
+  MeasuringViewModel? _measuringViewModel;
+
+  final _formKey = GlobalKey<FormState>();
+  final _titleController = TextEditingController();
+  final _descriptionController = TextEditingController();
+
   double buttonsWidth = 150;
 
   StreamSubscription<AccelerometerEvent>? _accelerometerSubscription;
@@ -21,6 +33,22 @@ class _MeasurementScreenState extends State<MeasurementScreen> {
   double _startTime = 0;
   MeasuringState _measuringState = MeasuringState.idle;
   final double _visibleGraphDuration = 10;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeViewModel();
+  }
+
+  Future<void> _initializeViewModel() async {
+    final dbService = DatabaseService();
+    final db = await dbService.database;
+    final measurementRepository = MeasurementDB(db);
+    final offsetRepository = OffsetDB(db);
+    setState(() {
+      _measuringViewModel = MeasuringViewModel(measurementRepository, offsetRepository);
+    });
+  }
 
   void _startMeasuring() {
     _startTime = DateTime.now().millisecondsSinceEpoch.toDouble();
@@ -58,6 +86,36 @@ class _MeasurementScreenState extends State<MeasurementScreen> {
     });
   }
 
+  Future<void> _saveMeasurementAndResultsToDB(BuildContext context) async {
+    bool? measurementAndResultsSaved = false;
+    if (_formKey.currentState!.validate()) {
+      final title = _titleController.text.trim();
+      final description = _descriptionController.text.trim();
+      measurementAndResultsSaved = await _measuringViewModel?.saveMeasurementAndResultsToDB(title: title, description: description, allMeasuredResults: _allMeasuredData);
+    }
+    if (measurementAndResultsSaved != null) {
+      if(measurementAndResultsSaved) {
+        widget.onNavigateToThird();
+      } else {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            actions: [
+              TextButton(onPressed: (){
+                  Navigator.of(context).pop();
+                },
+                child: const Text('OK'),
+              ),
+            ],
+            title: const Text('Error'),
+            contentPadding: const EdgeInsets.all(20.0),
+            content: const Text('Error saving data. Please try again.'),
+          ),
+        );
+      }
+    }
+  }
+
   void _reset() {
     _lastValuesForGraph.clear();
     _allMeasuredData.clear();
@@ -74,7 +132,6 @@ class _MeasurementScreenState extends State<MeasurementScreen> {
   }
 
   List<FlSpot> _getXAxisSpots() {
-    // return _lastValuesForGraph.map((m) => FlSpot(m.offsetTime, m.xAxisOffset)).toList();
     if (_lastValuesForGraph.isEmpty) return [];
     final double latestX = _lastValuesForGraph.last.offsetTime;
     final double windowStart = latestX - _visibleGraphDuration;
@@ -111,11 +168,41 @@ class _MeasurementScreenState extends State<MeasurementScreen> {
     } else {
       if (_measuringState == MeasuringState.saving) {
         return Scaffold(
-          body: Center(
-            child: Text(
-              'SAVING...'
+          body: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextFormField(
+                    controller: _titleController,
+                    decoration: const InputDecoration(labelText: 'Title'),
+                    validator: (value) =>
+                    value == null || value.trim().isEmpty ? 'Title is required' : null,
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _descriptionController,
+                    decoration: const InputDecoration(labelText: 'Description (optional)'),
+                    maxLines: 3,
+                  ),
+                  const SizedBox(height: 24),
+                  Center(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.greenAccent
+                      ),
+                      onPressed:() {
+                        _saveMeasurementAndResultsToDB(context);
+                      },
+                      child: const Text('SAVE'),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          )
+          ),
         );
       }
     }
@@ -193,6 +280,7 @@ class _MeasurementScreenState extends State<MeasurementScreen> {
                       )
                     ),
                   ),
+                  //TODO: IF REFERENT MEASUREMENT IS SET IN PREFS, ADD BUTTON FOR COMPARING TO CURRENT MEASURING
                 ],
               ]
             ),

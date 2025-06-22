@@ -2,7 +2,7 @@ class Measurement {
   final int id;
   final String title;
   final String? description;
-  final DateTime timeOfMeasurement;
+  final int timeOfMeasurement;
   final bool favorite;
 
   Measurement({

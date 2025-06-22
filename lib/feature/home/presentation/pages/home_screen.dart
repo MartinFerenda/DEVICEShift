@@ -18,14 +18,19 @@ class _HomeScreenState extends State<HomeScreen> {
   final navigationKey = GlobalKey<CurvedNavigationBarState>();
   int index = 0;
 
-  final screens = [
-    HomeScreenDetails(),
-    MeasurementScreen(),
-    ResultsScreen(),
-  ];
-
   @override
   Widget build(BuildContext context) {
+
+    final screens = [
+      HomeScreenDetails(),
+      MeasurementScreen(onNavigateToThird: () {
+        setState(() {
+          index = 2;
+        });
+      }),
+      ResultsScreen(),
+    ];
+
     return Scaffold(
       appBar: CustomAppBar(currentScreen: index),
       body: screens[index],
