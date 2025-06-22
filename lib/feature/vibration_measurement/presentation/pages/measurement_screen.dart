@@ -139,11 +139,29 @@ class _MeasurementScreenState extends State<MeasurementScreen> {
     return _lastValuesForGraph.where((spot) => spot.offsetTime >= windowStart).map((spot) => FlSpot(spot.offsetTime, spot.xAxisOffset > 5 ? 5 : spot.xAxisOffset)).toList();
   }
 
+  List<FlSpot> _getYAxisSpots() {
+    if (_lastValuesForGraph.isEmpty) return [];
+    final double latestX = _lastValuesForGraph.last.offsetTime;
+    final double windowStart = latestX - _visibleGraphDuration;
+
+    return _lastValuesForGraph.where((spot) => spot.offsetTime >= windowStart).map((spot) => FlSpot(spot.offsetTime, spot.yAxisOffset > 5 ? 5 : spot.yAxisOffset)).toList();
+  }
+
+  List<FlSpot> _getZAxisSpots() {
+    if (_lastValuesForGraph.isEmpty) return [];
+    final double latestX = _lastValuesForGraph.last.offsetTime;
+    final double windowStart = latestX - _visibleGraphDuration;
+
+    return _lastValuesForGraph.where((spot) => spot.offsetTime >= windowStart).map((spot) => FlSpot(spot.offsetTime, spot.zAxisOffset > 5 ? 5 : spot.zAxisOffset)).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final visibleSpots = _getXAxisSpots();
+    final visibleXSpots = _getXAxisSpots();
+    final visibleYSpots = _getYAxisSpots();
+    final visibleZSpots = _getZAxisSpots();
 
-    if (visibleSpots.isEmpty) {
+    if (visibleXSpots.isEmpty) {
       return Scaffold(
         body: Center(
           child: ElevatedButton(
@@ -213,15 +231,28 @@ class _MeasurementScreenState extends State<MeasurementScreen> {
           Expanded(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+              //TODO: MAYBE ADD LEGEND WITH COLORS FOR EACH AXIS
               child: LineChart(
                 LineChartData(
-                  minX: visibleSpots.first.x,
-                  maxX: visibleSpots.first.x + _visibleGraphDuration,
+                  minX: visibleXSpots.first.x,
+                  maxX: visibleXSpots.first.x + _visibleGraphDuration,
                   lineBarsData: [
                     LineChartBarData(
-                      spots: visibleSpots,
+                      spots: visibleXSpots,
                       isCurved: true,
                       color: Colors.redAccent,
+                      dotData: FlDotData(show: false),
+                    ),
+                    LineChartBarData(
+                      spots: visibleYSpots,
+                      isCurved: true,
+                      color: Colors.blueAccent,
+                      dotData: FlDotData(show: false),
+                    ),
+                    LineChartBarData(
+                      spots: visibleZSpots,
+                      isCurved: true,
+                      color: Colors.green,
                       dotData: FlDotData(show: false),
                     ),
                   ],
