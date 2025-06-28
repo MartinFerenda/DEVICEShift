@@ -1,5 +1,8 @@
+import 'dart:math';
+
 import 'package:device_shift/feature/measurement_results/data/models/measurement.dart';
 import 'package:device_shift/feature/vibration_measurement/data/models/offset.dart';
+import 'package:fftea/impl.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -10,6 +13,14 @@ import '../../../../common/widgets/custom_app_bar.dart';
 class MeasurementDetailsScreen extends StatelessWidget {
   const MeasurementDetailsScreen({super.key});
 
+  List<FlSpot> getSpotsForGraph(List<double> magnitudes) {
+    int fftSize = magnitudes.length;
+    return List.generate(fftSize ~/ 2, (i) {
+      double frequency = i * 10.0 / fftSize;
+      return FlSpot(frequency, magnitudes[i]);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -17,16 +28,31 @@ class MeasurementDetailsScreen extends StatelessWidget {
     final measurement = arguments['measurement'] as Measurement;
     final measuredOffsets = arguments['measuredOffsets'] as List<MeasuredOffset>;
 
-    List<FlSpot> xOffsets = [];
-    List<FlSpot> yOffsets = [];
-    List<FlSpot> zOffsets = [];
+    List<double> xOffsets = [];
+    List<double> yOffsets = [];
+    List<double> zOffsets = [];
 
     for (int i = 0; i < measuredOffsets.length; i++) {
       MeasuredOffset offset = measuredOffsets.elementAt(i);
-      xOffsets.add(FlSpot(offset.offsetTime, offset.xAxisOffset));
-      yOffsets.add(FlSpot(offset.offsetTime, offset.yAxisOffset));
-      zOffsets.add(FlSpot(offset.offsetTime, offset.zAxisOffset));
+      xOffsets.add(offset.xAxisOffset);
+      yOffsets.add(offset.yAxisOffset);
+      zOffsets.add(offset.zAxisOffset);
     }
+
+    final fftX = FFT(xOffsets.length);
+    final spectrumX = fftX.realFft(xOffsets);
+    final magnitudesX = spectrumX.map((c) => sqrt(c.x * c.x + c.y *c.y)).toList();
+    List<FlSpot> xSpots = getSpotsForGraph(magnitudesX.cast<double>());
+
+    final fftY = FFT(yOffsets.length);
+    final spectrumY = fftY.realFft(yOffsets);
+    final magnitudesY = spectrumY.map((c) => sqrt(c.x * c.x + c.y *c.y)).toList();
+    List<FlSpot> ySpots = getSpotsForGraph(magnitudesY.cast<double>());
+
+    final fftZ = FFT(zOffsets.length);
+    final spectrumZ = fftZ.realFft(zOffsets);
+    final magnitudesZ = spectrumZ.map((c) => sqrt(c.x * c.x + c.y *c.y)).toList();
+    List<FlSpot> zSpots = getSpotsForGraph(magnitudesZ.cast<double>());
 
     var dateAndTime = DateFormat('dd.MM.yyyy. HH:mm:ss').format(DateTime.fromMillisecondsSinceEpoch(measurement.timeOfMeasurement));
 
@@ -55,19 +81,19 @@ class MeasurementDetailsScreen extends StatelessWidget {
                   LineChartData(
                     lineBarsData: [
                       LineChartBarData(
-                        spots: xOffsets,
+                        spots: xSpots,
                         isCurved: true,
                         color: Colors.redAccent,
                         dotData: FlDotData(show: false),
                       ),
                       LineChartBarData(
-                        spots: yOffsets,
+                        spots: ySpots,
                         isCurved: true,
                         color: Colors.green,
                         dotData: FlDotData(show: false),
                       ),
                       LineChartBarData(
-                        spots: zOffsets,
+                        spots: zSpots,
                         isCurved: true,
                         color: Colors.blueAccent,
                         dotData: FlDotData(show: false),

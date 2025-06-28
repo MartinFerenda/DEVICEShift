@@ -54,6 +54,7 @@ class _MeasurementScreenState extends State<MeasurementScreen> {
     _startTime = DateTime.now().millisecondsSinceEpoch.toDouble();
     _lastValuesForGraph.clear();
     _allMeasuredData.clear();
+    _measuringViewModel?.clearResults();
 
     _accelerometerSubscription = accelerometerEvents.listen((event) {
       final currentTime = DateTime.now().millisecondsSinceEpoch.toDouble();
@@ -75,6 +76,7 @@ class _MeasurementScreenState extends State<MeasurementScreen> {
 
   void _stopMeasuring() {
     _accelerometerSubscription?.cancel();
+    _measuringViewModel?.setMeasuredResults(_allMeasuredData);
     setState(() {
       _measuringState = MeasuringState.stopped;
     });
@@ -91,7 +93,7 @@ class _MeasurementScreenState extends State<MeasurementScreen> {
     if (_formKey.currentState!.validate()) {
       final title = _titleController.text.trim();
       final description = _descriptionController.text.trim();
-      measurementAndResultsSaved = await _measuringViewModel?.saveMeasurementAndResultsToDB(title: title, description: description, allMeasuredResults: _allMeasuredData);
+      measurementAndResultsSaved = await _measuringViewModel?.saveMeasurementAndResultsToDB(title: title, description: description);
     }
     if (measurementAndResultsSaved != null) {
       if(measurementAndResultsSaved) {
@@ -119,6 +121,7 @@ class _MeasurementScreenState extends State<MeasurementScreen> {
   void _reset() {
     _lastValuesForGraph.clear();
     _allMeasuredData.clear();
+    _measuringViewModel?.clearResults();
     _startTime = 0;
     setState(() {
       _measuringState = MeasuringState.idle;
@@ -157,6 +160,7 @@ class _MeasurementScreenState extends State<MeasurementScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // _measuringViewModel = Provider.of<MeasuringViewModel>(context);
     final visibleXSpots = _getXAxisSpots();
     final visibleYSpots = _getYAxisSpots();
     final visibleZSpots = _getZAxisSpots();
