@@ -16,6 +16,7 @@ class OffsetDB implements OffsetRepository{
       xAxisOffset DOUBLE NOT NULL,
       yAxisOffset DOUBLE NOT NULL,
       zAxisOffset DOUBLE NOT NULL,
+      offsetTime DOUBLE NOT NULL,
       measurementId INTEGER NOT NULL,
       FOREIGN KEY (measurementId) REFERENCES measurement(id)
       )''';
@@ -30,6 +31,7 @@ class OffsetDB implements OffsetRepository{
           'xAxisOffset': offset.xAxisOffset,
           'yAxisOffset': offset.yAxisOffset,
           'zAxisOffset': offset.zAxisOffset,
+          'offsetTime': offset.offsetTime,
           'measurementId': measurementId,
         }, conflictAlgorithm: ConflictAlgorithm.replace);
       }

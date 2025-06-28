@@ -15,7 +15,7 @@ class MeasurementScreen extends StatefulWidget {
   const MeasurementScreen({required this.onNavigateToThird, super.key});
 
   @override
-  _MeasurementScreenState createState() => _MeasurementScreenState();
+  State<MeasurementScreen> createState() => _MeasurementScreenState();
 }
 
 class _MeasurementScreenState extends State<MeasurementScreen> {
@@ -246,13 +246,13 @@ class _MeasurementScreenState extends State<MeasurementScreen> {
                     LineChartBarData(
                       spots: visibleYSpots,
                       isCurved: true,
-                      color: Colors.blueAccent,
+                      color: Colors.green,
                       dotData: FlDotData(show: false),
                     ),
                     LineChartBarData(
                       spots: visibleZSpots,
                       isCurved: true,
-                      color: Colors.green,
+                      color: Colors.blueAccent,
                       dotData: FlDotData(show: false),
                     ),
                   ],

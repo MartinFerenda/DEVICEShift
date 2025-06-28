@@ -44,4 +44,18 @@ class MeasurementDB implements MeasurementRepository{
       'favorite': measurement.favorite ? 1 : 0
     }, conflictAlgorithm: ConflictAlgorithm.replace);
   }
+
+  @override
+  Future<int> updateFavoriteStatus(int measurementId, bool isFavorite) async{
+    return await _database.update(
+      tableName,
+      {
+        'favorite': isFavorite ? 1 : 0,
+      },
+      where: 'id = ?',
+      whereArgs: [measurementId],
+    );
+  }
+
+
 }

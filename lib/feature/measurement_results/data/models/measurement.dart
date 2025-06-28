@@ -18,6 +18,6 @@ class Measurement {
         id: measurementEntity['id'],
         title: measurementEntity['title'],
         timeOfMeasurement: measurementEntity['timeOfMeasurement'],
-        favorite: measurementEntity['favorite']);
+        favorite: measurementEntity['favorite'] == 1);
   }
 }
