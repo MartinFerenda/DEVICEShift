@@ -95,10 +95,32 @@ class _ResultsScreenState extends State<ResultsScreen> {
                   isReferentMeasurement: measurement.id ==
                       referentMeasurementId ? true : false,
                   onTapSetReferent: () {
-                    AppPreferences.setReferentMeasurementId(measurement.id);
-                    setState(() {
-                      referentMeasurementId = measurement.id;
-                    });
+                    int? currentReferent = AppPreferences.getReferentMeasurementId();
+                    if (currentReferent != null) {
+                      if (currentReferent > 0) {
+                        if (measurement.id == currentReferent) {
+                          AppPreferences.setReferentMeasurementId(-1);
+                          setState(() {
+                            referentMeasurementId = -1;
+                          });
+                        } else {
+                          AppPreferences.setReferentMeasurementId(measurement.id);
+                          setState(() {
+                            referentMeasurementId = measurement.id;
+                          });
+                        }
+                      } else {
+                        AppPreferences.setReferentMeasurementId(measurement.id);
+                        setState(() {
+                          referentMeasurementId = measurement.id;
+                        });
+                      }
+                    } else {
+                      AppPreferences.setReferentMeasurementId(measurement.id);
+                      setState(() {
+                        referentMeasurementId = measurement.id;
+                      });
+                    }
                   },
                   isFavoriteMeasurement: measurement.favorite,
                   onTapSetFavorite: () {
