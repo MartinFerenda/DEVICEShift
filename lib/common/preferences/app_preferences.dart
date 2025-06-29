@@ -7,6 +7,8 @@ class AppPreferences {
   static const _keyLanguage = 'language';
   static const _keyAppTheme = 'app_theme';
   static const _keyReferentMeasureId = 'referent_measure_id';
+  static const _keyAllowedFrequencyDeviation = 'referent_measure_id';
+  static const _keyAllowedAmplitudeDeviation = 'referent_measure_id';
 
   static Future init() async => _preferences = await SharedPreferences.getInstance();
 
@@ -25,4 +27,16 @@ class AppPreferences {
 
   static int? getReferentMeasurementId() =>
       _preferences.getInt(_keyReferentMeasureId);
+
+  static Future setAllowedFrequencyDeviation(double allowedFrequencyDeviation) async =>
+      await _preferences.setDouble(_keyAllowedFrequencyDeviation, allowedFrequencyDeviation);
+
+  static double? getAllowedFrequencyDeviation() =>
+      _preferences.getDouble(_keyAllowedFrequencyDeviation);
+
+  static Future setAllowedAmplitudeDeviation(double allowedAmplitudeDeviation) async =>
+      await _preferences.setDouble(_keyAllowedAmplitudeDeviation, allowedAmplitudeDeviation);
+
+  static double? getAllowedAmplitudeDeviation() =>
+      _preferences.getDouble(_keyAllowedAmplitudeDeviation);
 }

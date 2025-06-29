@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:device_shift/common/database/offset_db.dart';
+import 'package:device_shift/common/preferences/app_preferences.dart';
 import 'package:device_shift/feature/vibration_measurement/data/models/offset.dart';
 import 'package:device_shift/feature/vibration_measurement/domain/measurement_viewmodel.dart';
 import 'package:device_shift/feature/vibration_measurement/presentation/enums/measuring_state.dart';
@@ -26,6 +27,7 @@ class _MeasurementScreenState extends State<MeasurementScreen> {
   final _descriptionController = TextEditingController();
 
   double buttonsWidth = 150;
+  double buttonsHeight = 40;
 
   StreamSubscription<AccelerometerEvent>? _accelerometerSubscription;
   List<MeasuredOffset> _allMeasuredData = [];
@@ -126,6 +128,26 @@ class _MeasurementScreenState extends State<MeasurementScreen> {
     setState(() {
       _measuringState = MeasuringState.idle;
     });
+  }
+
+  void _compareResultToReferent() async{
+    int? currentReferentMeasurementId = AppPreferences.getReferentMeasurementId();
+    if (currentReferentMeasurementId != null) {
+      if (currentReferentMeasurementId > 0) {
+        int? operatingDeviceStatus = await _measuringViewModel?.compareCurrentToReferentMeasurement(currentReferentMeasurementId, _allMeasuredData);
+        if (operatingDeviceStatus == 0) {
+          //TODO: DEVICE WORKING GOOD
+        } else if (operatingDeviceStatus == 1) {
+          //TODO: DEVICE MAY BE MALFUNCTIONING
+        } else {
+          //TODO: ERROR - DEVIATION IN PREFS NOT SET
+        }
+      } else {
+        //TODO: ERROR COMPARING - CURRENT REFERENT ID NOT SET
+      }
+    } else {
+      //TODO: ERROR COMPARING - CURRENT REFERENT ID NOT SET
+    }
   }
 
   @override
@@ -265,60 +287,93 @@ class _MeasurementScreenState extends State<MeasurementScreen> {
             ),
           ),
           Center(
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
+            child: Column(
               children: [
-                SizedBox(
-                  width: buttonsWidth,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.greenAccent
-                    ),
-                    onPressed: () {
-                      if (_measuringState == MeasuringState.running) {
-                        _stopMeasuring();
-                      } else if (_measuringState == MeasuringState.idle){
-                        _startMeasuring();
-                      } else {
-                        _reset();
-                      }
-                    },
-                    child: Text(
-                      (){
-                        if (_measuringState == MeasuringState.running) {
-                          return 'STOP';
-                        } else if (_measuringState == MeasuringState.idle){
-                          return 'START';
-                        } else {
-                          return 'RESET';
-                        }
-                      }(),
-                    ),
+                Padding(padding: EdgeInsetsGeometry.only(left: 0, right: 0, top: 15, bottom: 0),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: buttonsWidth,
+                        height: buttonsHeight,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.greenAccent
+                          ),
+                          onPressed: () {
+                            if (_measuringState == MeasuringState.running) {
+                              _stopMeasuring();
+                            } else if (_measuringState == MeasuringState.idle){
+                              _startMeasuring();
+                            } else {
+                              _reset();
+                            }
+                          },
+                          child: Text(
+                            (){
+                              if (_measuringState == MeasuringState.running) {
+                                return 'STOP';
+                              } else if (_measuringState == MeasuringState.idle){
+                                return 'START';
+                              } else {
+                                return 'RESET';
+                              }
+                            }(),
+                          ),
+                        ),
+                      ),
+                      if (_measuringState == MeasuringState.stopped) ... [
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        SizedBox(
+                          width: buttonsWidth,
+                          height: buttonsHeight,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.greenAccent
+                            ),
+                            onPressed: (){
+                              _saveResults();
+                            },
+                            child: Text(
+                              'SAVE'
+                            )
+                          ),
+                        ),
+                      ],
+                    ]
                   ),
                 ),
-                if (_measuringState == MeasuringState.stopped) ... [
-                  const SizedBox(
-                    width: 20,
-                  ),
-                  SizedBox(
-                    width: buttonsWidth,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.greenAccent
-                      ),
-                      onPressed: (){
-                        _saveResults();
-                      },
-                      child: Text(
-                        'SAVE'
-                      )
+                if (AppPreferences.getReferentMeasurementId() != null && AppPreferences.getReferentMeasurementId()! > 0 && _measuringState == MeasuringState.stopped) ... [
+                  Padding(padding: EdgeInsetsGeometry.only(left: 0, right: 0, top: 20, bottom: 0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Center(
+                          child: SizedBox(
+                            width: buttonsWidth,
+                            height: buttonsHeight,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.greenAccent
+                              ),
+                              onPressed: (){
+                                _compareResultToReferent();
+                              },
+                              child: Text(
+                                'COMPARE'
+                              )
+                            ),
+                          ),
+                        ),
+                      ]
                     ),
                   ),
-                  //TODO: IF REFERENT MEASUREMENT IS SET IN PREFS, ADD BUTTON FOR COMPARING TO CURRENT MEASURING
-                ],
+                ]
               ]
-            ),
+            )
           ),
           SizedBox(height: 20),
         ],
