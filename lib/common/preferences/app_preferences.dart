@@ -7,8 +7,8 @@ class AppPreferences {
   static const _keyLanguage = 'language';
   static const _keyAppTheme = 'app_theme';
   static const _keyReferentMeasureId = 'referent_measure_id';
-  static const _keyAllowedFrequencyDeviation = 'referent_measure_id';
-  static const _keyAllowedAmplitudeDeviation = 'referent_measure_id';
+  static const _keyAllowedFrequencyDeviation = 'allowed_frequency_deviation';
+  static const _keyAllowedAmplitudeDeviation = 'allowed_amplitude_deviation';
 
   static Future init() async => _preferences = await SharedPreferences.getInstance();
 
