@@ -62,17 +62,14 @@ class MeasurementDetailsScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            Row(
-              children: [
-                Padding(padding: EdgeInsetsGeometry.only(left: 0, right: 0, top: 10, bottom: 10),
-                  child: Text(
-                    measurement.title,
-                    overflow: TextOverflow.clip,
-                    maxLines: 3,
-                    softWrap: false,
-                  ),
-                )
-              ],
+            Container(
+              padding: EdgeInsets.all(10.0),
+              width: MediaQuery.of(context).size.width * 0.9,
+              child: Column(
+                children: [
+                  Text(measurement.title),
+                ],
+              )
             ),
             SizedBox(
               height: 300,
@@ -116,12 +113,18 @@ class MeasurementDetailsScreen extends StatelessWidget {
             Divider(
               color: Colors.black38,
             ),
-            Row(
-              children: [
-                Text(
-                  measurement.description ?? ""
-                ),
-              ],
+            Container(
+              padding: EdgeInsets.all(10.0),
+              width: MediaQuery.of(context).size.width * 0.9,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    textAlign: TextAlign.left,
+                    measurement.description ?? ""
+                  ),
+                ],
+              ),
             ),
           ],
         ),

@@ -17,6 +17,7 @@ class Measurement {
     return Measurement(
         id: measurementEntity['id'],
         title: measurementEntity['title'],
+        description: measurementEntity['description'],
         timeOfMeasurement: measurementEntity['timeOfMeasurement'],
         favorite: measurementEntity['favorite'] == 1);
   }
