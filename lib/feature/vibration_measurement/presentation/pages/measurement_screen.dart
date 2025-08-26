@@ -29,7 +29,7 @@ class _MeasurementScreenState extends State<MeasurementScreen> {
   double buttonsWidth = 150;
   double buttonsHeight = 40;
 
-  StreamSubscription<AccelerometerEvent>? _accelerometerSubscription;
+  StreamSubscription<UserAccelerometerEvent>? _userAccelerometerSubscription;
   List<MeasuredOffset> _allMeasuredData = [];
   List<MeasuredOffset> _lastValuesForGraph = [];
   double _startTime = 0;
@@ -58,7 +58,7 @@ class _MeasurementScreenState extends State<MeasurementScreen> {
     _allMeasuredData.clear();
     _measuringViewModel?.clearResults();
 
-    _accelerometerSubscription = accelerometerEvents.listen((event) {
+    _userAccelerometerSubscription = userAccelerometerEventStream().listen((event) {
       final currentTime = DateTime.now().millisecondsSinceEpoch.toDouble();
       final time = (currentTime - _startTime) / 1000.0;
 
@@ -77,7 +77,7 @@ class _MeasurementScreenState extends State<MeasurementScreen> {
   }
 
   void _stopMeasuring() {
-    _accelerometerSubscription?.cancel();
+    _userAccelerometerSubscription?.cancel();
     _measuringViewModel?.setMeasuredResults(_allMeasuredData);
     setState(() {
       _measuringState = MeasuringState.stopped;
@@ -152,7 +152,7 @@ class _MeasurementScreenState extends State<MeasurementScreen> {
 
   @override
   void dispose() {
-    _accelerometerSubscription?.cancel();
+    _userAccelerometerSubscription?.cancel();
     super.dispose();
   }
 
