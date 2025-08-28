@@ -136,18 +136,39 @@ class _MeasurementScreenState extends State<MeasurementScreen> {
       if (currentReferentMeasurementId > 0) {
         int? operatingDeviceStatus = await _measuringViewModel?.compareCurrentToReferentMeasurement(currentReferentMeasurementId, _allMeasuredData);
         if (operatingDeviceStatus == 0) {
-          //TODO: DEVICE WORKING GOOD
+          _showResultInDialog(title: "Uspješna usporedba!", content: "Uređaj radi ispravno!");
         } else if (operatingDeviceStatus == 1) {
-          //TODO: DEVICE MAY BE MALFUNCTIONING
+          _showResultInDialog(title: "Uspješna usporedba!", content: "Uređaj možda ne radi ispravno. Preporuča se pregled uređaja.");
         } else {
-          //TODO: ERROR - DEVIATION IN PREFS NOT SET
+          _showResultInDialog(title: "Greška!", content: "Dozvoljeno odstupanje nije definirano u postavkama.");
         }
       } else {
-        //TODO: ERROR COMPARING - CURRENT REFERENT ID NOT SET
+        _showResultInDialog(title: "Greška!", content: "Nije odabrano referntno mjerenje.");
       }
     } else {
-      //TODO: ERROR COMPARING - CURRENT REFERENT ID NOT SET
+      _showResultInDialog(title: "Greška!", content: "Nije odabrano referntno mjerenje.");
     }
+  }
+
+  Future<void> _showResultInDialog ({required String title, required String content}) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return AlertDialog (
+          title: Text(title),
+          content: Text(content),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      }
+    );
   }
 
   @override
