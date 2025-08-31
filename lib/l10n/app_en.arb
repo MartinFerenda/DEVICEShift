@@ -1,0 +1,41 @@
+{
+    "welcome": "Welcome to DEVICEShift app!",
+    "appbar_home": "DEVICEShift",
+    "appbar_settings": "Settings",
+    "appbar_measuring": "Measuring",
+    "appbar_results": "Results",
+    "appbar_measurement_details": "Measurement details",
+    "settings_measurement": "Measurement settings",
+    "settings_allowed_freq_deviation": "Allowed frequency deviation:",
+    "settings_allowed_amp_deviation": "Allowed amplitude deviation:",
+    "settings_number_of_readings_per_second": "Number of readings per second:",
+    "settings_app_language": "App language",
+    "settings_croatian": "Croatian",
+    "settings_english": "English",
+
+    "start": "START",
+    "stop": "STOP",
+    "reset": "RESET",
+    "compare": "COMPARE",
+    "save": "SAVE",
+    "title": "Title",
+    "title_required": "Title is required",
+    "description_optional": "Description (optional)",
+    "description": "Description",
+
+    "exit": "EXIT",
+    "cancel": "CANCEL",
+    "exit_app": "Exit app",
+    "exit_content": "Are you sure you want to exit?",
+
+    "comparison_successful": "Comparison successful!",
+    "error": "Error!",
+    "device_ok": "Device is working correctly.",
+    "device_not_ok": "Device may not be working properly. It is recommended to check the device.",
+    "allowed_deviation_not_specified": "Allowed deviation not specified in settings.",
+    "referent_measurement_not_selected": "Referent measurement is not selected.",
+    "ok": "OK",
+    "no_measurements_found": "No measurements found",
+    "error_saving_data": "Error saving data. Please try again."
+
+}

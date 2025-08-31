@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../widgets/round_exit_button.dart';
 import '../widgets/round_settings_button.dart';
 
@@ -9,6 +10,7 @@ class HomeScreenDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     return Scaffold(
       body: Column(
         mainAxisSize: MainAxisSize.max,
@@ -26,7 +28,7 @@ class HomeScreenDetails extends StatelessWidget {
                 ),
                 RoundExitButton(
                   onPressed: () {
-                    _showExitDialog(context);
+                    _showExitDialog(context, localizations);
                   },
                 ),
               ],
@@ -35,8 +37,8 @@ class HomeScreenDetails extends StatelessWidget {
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              const Text(
-                'Welcome to DEVICEShift app!',
+              Text(
+                localizations.welcome,
               ),
               // ElevatedButton(
               //   style: ElevatedButton.styleFrom(
@@ -57,23 +59,23 @@ class HomeScreenDetails extends StatelessWidget {
     );
   }
 
-  void _showExitDialog(BuildContext context) {
+  void _showExitDialog(BuildContext context, AppLocalizations localizations) {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text("Exit App"),
-        content: const Text("Are you sure you want to exit?"),
+        title: Text(localizations.exit_app),
+        content: Text(localizations.exit_content),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text("Cancel"),
+            child: Text(localizations.cancel),
           ),
           TextButton(
             onPressed: () {
               Navigator.pop(context);
               SystemNavigator.pop();
             },
-            child: const Text("Exit"),
+            child: Text(localizations.exit),
           ),
         ],
       ),

@@ -9,6 +9,7 @@ class AppPreferences {
   static const _keyReferentMeasureId = 'referent_measure_id';
   static const _keyAllowedFrequencyDeviation = 'allowed_frequency_deviation';
   static const _keyAllowedAmplitudeDeviation = 'allowed_amplitude_deviation';
+  static const _keyNumberOfMeasurementsPerSecond = 'number_of_measurements_per_second';
 
   static Future init() async => _preferences = await SharedPreferences.getInstance();
 
@@ -39,4 +40,11 @@ class AppPreferences {
 
   static double? getAllowedAmplitudeDeviation() =>
       _preferences.getDouble(_keyAllowedAmplitudeDeviation);
+
+  static Future setNumberOfMeasurementsPerSecond(int numberOfMeasurementsPerSecond) async =>
+      await _preferences.setInt(_keyNumberOfMeasurementsPerSecond, numberOfMeasurementsPerSecond);
+
+  static int? getNumberOfMeasurementsPerSecond() =>
+      _preferences.getInt(_keyNumberOfMeasurementsPerSecond);
+
 }

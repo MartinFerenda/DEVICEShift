@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import '../../../../common/database/database_service.dart';
 import '../../../../common/database/measurement_db.dart';
 import '../../../../common/database/offset_db.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../domain/results_viewmodel.dart';
 
 class ResultsScreen extends StatefulWidget {
@@ -67,6 +68,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     referentMeasurementId = AppPreferences.getReferentMeasurementId() ?? -1;
 
     return Scaffold(
@@ -80,7 +82,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
             }
 
             if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return const Center(child: Text("No measurements found."));
+              return Center(child: Text(localizations.no_measurements_found));
             }
 
             final measurements = snapshot.data!;

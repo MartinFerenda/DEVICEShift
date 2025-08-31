@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../common/database/database_service.dart';
 import '../../../../common/database/measurement_db.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class MeasurementScreen extends StatefulWidget {
   final VoidCallback onNavigateToThird;
@@ -58,6 +59,7 @@ class _MeasurementScreenState extends State<MeasurementScreen> {
     _allMeasuredData.clear();
     _measuringViewModel?.clearResults();
 
+    //TODO: NUMBER OF READINGS PER SECOND
     _userAccelerometerSubscription = userAccelerometerEventStream().listen((event) {
       final currentTime = DateTime.now().millisecondsSinceEpoch.toDouble();
       final time = (currentTime - _startTime) / 1000.0;
@@ -90,7 +92,7 @@ class _MeasurementScreenState extends State<MeasurementScreen> {
     });
   }
 
-  Future<void> _saveMeasurementAndResultsToDB(BuildContext context) async {
+  Future<void> _saveMeasurementAndResultsToDB(BuildContext context, AppLocalizations localizations) async {
     bool? measurementAndResultsSaved = false;
     if (_formKey.currentState!.validate()) {
       final title = _titleController.text.trim();
@@ -108,12 +110,12 @@ class _MeasurementScreenState extends State<MeasurementScreen> {
               TextButton(onPressed: (){
                   Navigator.of(context).pop();
                 },
-                child: const Text('OK'),
+                child: Text(localizations.ok),
               ),
             ],
-            title: const Text('Error'),
+            title: Text(localizations.error),
             contentPadding: const EdgeInsets.all(20.0),
-            content: const Text('Error saving data. Please try again.'),
+            content: Text(localizations.error_saving_data),
           ),
         );
       }
@@ -130,23 +132,23 @@ class _MeasurementScreenState extends State<MeasurementScreen> {
     });
   }
 
-  void _compareResultToReferent() async{
+  void _compareResultToReferent(AppLocalizations localizations) async{
     int? currentReferentMeasurementId = AppPreferences.getReferentMeasurementId();
     if (currentReferentMeasurementId != null) {
       if (currentReferentMeasurementId > 0) {
         int? operatingDeviceStatus = await _measuringViewModel?.compareCurrentToReferentMeasurement(currentReferentMeasurementId, _allMeasuredData);
         if (operatingDeviceStatus == 0) {
-          _showResultInDialog(title: "Uspješna usporedba!", content: "Uređaj radi ispravno!");
+          _showResultInDialog(title: localizations.comparison_successful, content: localizations.device_ok);
         } else if (operatingDeviceStatus == 1) {
-          _showResultInDialog(title: "Uspješna usporedba!", content: "Uređaj možda ne radi ispravno. Preporuča se pregled uređaja.");
+          _showResultInDialog(title: localizations.comparison_successful, content: localizations.device_not_ok);
         } else {
-          _showResultInDialog(title: "Greška!", content: "Dozvoljeno odstupanje nije definirano u postavkama.");
+          _showResultInDialog(title: localizations.error, content: localizations.allowed_deviation_not_specified);
         }
       } else {
-        _showResultInDialog(title: "Greška!", content: "Nije odabrano referntno mjerenje.");
+        _showResultInDialog(title: localizations.error, content: localizations.referent_measurement_not_selected);
       }
     } else {
-      _showResultInDialog(title: "Greška!", content: "Nije odabrano referntno mjerenje.");
+      _showResultInDialog(title: localizations.error, content: localizations.referent_measurement_not_selected);
     }
   }
 
@@ -203,6 +205,7 @@ class _MeasurementScreenState extends State<MeasurementScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     // _measuringViewModel = Provider.of<MeasuringViewModel>(context);
     final visibleXSpots = _getXAxisSpots();
     final visibleYSpots = _getYAxisSpots();
@@ -225,7 +228,7 @@ class _MeasurementScreenState extends State<MeasurementScreen> {
               }
             },
             child: Text(
-              'START'
+              localizations.start
             ),
           ),
         )
@@ -242,14 +245,14 @@ class _MeasurementScreenState extends State<MeasurementScreen> {
                 children: [
                   TextFormField(
                     controller: _titleController,
-                    decoration: const InputDecoration(labelText: 'Title'),
+                    decoration: InputDecoration(labelText: localizations.title),
                     validator: (value) =>
-                    value == null || value.trim().isEmpty ? 'Title is required' : null,
+                    value == null || value.trim().isEmpty ? localizations.title_required : null,
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
                     controller: _descriptionController,
-                    decoration: const InputDecoration(labelText: 'Description (optional)'),
+                    decoration: InputDecoration(labelText: localizations.description_optional),
                     maxLines: 3,
                   ),
                   const SizedBox(height: 24),
@@ -259,9 +262,9 @@ class _MeasurementScreenState extends State<MeasurementScreen> {
                           backgroundColor: Colors.greenAccent
                       ),
                       onPressed:() {
-                        _saveMeasurementAndResultsToDB(context);
+                        _saveMeasurementAndResultsToDB(context, localizations);
                       },
-                      child: const Text('SAVE'),
+                      child: Text(localizations.save),
                     ),
                   ),
                 ],
@@ -332,13 +335,14 @@ class _MeasurementScreenState extends State<MeasurementScreen> {
                             }
                           },
                           child: Text(
+                            textAlign: TextAlign.center,
                             (){
                               if (_measuringState == MeasuringState.running) {
-                                return 'STOP';
+                                return localizations.stop;
                               } else if (_measuringState == MeasuringState.idle){
-                                return 'START';
+                                return localizations.start;
                               } else {
-                                return 'RESET';
+                                return localizations.reset;
                               }
                             }(),
                           ),
@@ -359,7 +363,7 @@ class _MeasurementScreenState extends State<MeasurementScreen> {
                               _saveResults();
                             },
                             child: Text(
-                              'SAVE'
+                              localizations.save
                             )
                           ),
                         ),
@@ -381,10 +385,10 @@ class _MeasurementScreenState extends State<MeasurementScreen> {
                                 backgroundColor: Colors.greenAccent
                               ),
                               onPressed: (){
-                                _compareResultToReferent();
+                                _compareResultToReferent(localizations);
                               },
                               child: Text(
-                                'COMPARE'
+                                localizations.compare
                               )
                             ),
                           ),
