@@ -59,8 +59,19 @@ class _MeasurementScreenState extends State<MeasurementScreen> {
     _allMeasuredData.clear();
     _measuringViewModel?.clearResults();
 
-    //TODO: NUMBER OF READINGS PER SECOND
-    _userAccelerometerSubscription = userAccelerometerEventStream().listen((event) {
+    Duration timeBetweenSensorReading = SensorInterval.normalInterval;
+    int? numberOfReadingPerSecond = AppPreferences.getNumberOfMeasurementsPerSecond();
+    if (numberOfReadingPerSecond != null) {
+      if (numberOfReadingPerSecond != 0) {
+        int millisBetweenReading = (1000 / numberOfReadingPerSecond).round();
+        timeBetweenSensorReading = Duration(milliseconds: millisBetweenReading);
+      } else {
+        timeBetweenSensorReading = SensorInterval.normalInterval;
+      }
+    } else {
+      timeBetweenSensorReading = SensorInterval.normalInterval;
+    }
+    _userAccelerometerSubscription = userAccelerometerEventStream(samplingPeriod: timeBetweenSensorReading).listen((event) {
       final currentTime = DateTime.now().millisecondsSinceEpoch.toDouble();
       final time = (currentTime - _startTime) / 1000.0;
 

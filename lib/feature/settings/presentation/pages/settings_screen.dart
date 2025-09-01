@@ -2,6 +2,7 @@ import 'package:device_shift/common/preferences/app_preferences.dart';
 import 'package:device_shift/common/widgets/custom_app_bar.dart';
 import 'package:device_shift/main.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../../../common/constants/app_screens.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -117,19 +118,119 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final localizations = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: CustomAppBar(currentScreen: AppScreens.settings.index),
-      body: Padding(padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: EdgeInsetsGeometry.only(left: 18, right: 0, top: 0, bottom: 0),
-              child: Text(localizations.settings_measurement),
-            ),
-            Form(
-              key: _formKey,
-              child: Container(
-                margin: EdgeInsetsGeometry.only(left: 0, right: 0, top: 10, bottom: 10),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: EdgeInsetsGeometry.only(left: 18, right: 0, top: 0, bottom: 0),
+                child: Text(localizations.settings_measurement),
+              ),
+              Form(
+                key: _formKey,
+                child: Container(
+                  margin: EdgeInsetsGeometry.only(left: 0, right: 0, top: 10, bottom: 10),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      width: 3,
+                      color: Colors.greenAccent,
+                    ),
+                    borderRadius: BorderRadius.all(Radius.circular(15)),
+                  ),
+                  child: Padding(
+                    padding: EdgeInsetsGeometry.all(15),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(localizations.settings_allowed_freq_deviation),
+                            SizedBox(
+                              width: 60,
+                              child: TextFormField(
+                                controller: _frequencyController,
+                                keyboardType: TextInputType.number,
+                                textAlign: TextAlign.center,
+                                validator: (value) =>
+                                value == null || value.trim().isEmpty ? "-1" : null,
+                                decoration: InputDecoration(
+                                  enabledBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Colors.greenAccent,
+                                      width: 3.0,
+                                    )
+                                  )
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(localizations.settings_allowed_amp_deviation),
+                            SizedBox(
+                              width: 60,
+                              child:  TextFormField(
+                                controller: _amplitudeController,
+                                keyboardType: TextInputType.number,
+                                textAlign: TextAlign.center,
+                                validator: (value) =>
+                                value == null || value.trim().isEmpty ? "-1" : null,
+                                decoration: InputDecoration(
+                                  enabledBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Colors.greenAccent,
+                                      width: 3.0,
+                                    )
+                                  )
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(localizations.settings_number_of_readings_per_second),
+                            SizedBox(
+                              width: 60,
+                              child:  TextFormField(
+                                controller: _measurementsPerSecondController,
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly,
+                                ],
+                                textAlign: TextAlign.center,
+                                validator: (value) =>
+                                value == null || value.trim().isEmpty ? "0" : null,
+                                decoration: InputDecoration(
+                                  enabledBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Colors.greenAccent,
+                                      width: 3.0,
+                                    )
+                                  )
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsetsGeometry.only(left: 18, right: 0, top: 0, bottom: 0),
+                child: Text(localizations.settings_app_language),
+              ),
+              Container(
+                margin: EdgeInsetsGeometry.only(left: 0, right: 0, top: 10, bottom: 20),
                 decoration: BoxDecoration(
                   border: Border.all(
                     width: 3,
@@ -137,113 +238,41 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                   borderRadius: BorderRadius.all(Radius.circular(15)),
                 ),
-                child: Padding(
-                  padding: EdgeInsetsGeometry.all(15),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: EdgeInsetsGeometry.only(left: 3, right: 0, top: 0, bottom: 0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Text(localizations.settings_allowed_freq_deviation),
                           SizedBox(
-                            width: 60,
-                            child: TextFormField(
-                              controller: _frequencyController,
-                              keyboardType: TextInputType.number,
-                              textAlign: TextAlign.center,
-                              validator: (value) =>
-                              value == null || value.trim().isEmpty ? "-1" : null,
-                              decoration: InputDecoration(
-                                enabledBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: Colors.greenAccent,
-                                    width: 3.0,
-                                  )
-                                )
+                            width: 250,
+                            child:
+                              RadioMenuButton(
+                                value: 'hr',
+                                groupValue: appLanguage,
+                                onChanged: (selectedLanguage) {
+                                  setState(() {
+                                    appLanguage = selectedLanguage!;
+                                    _changeAppLanguage(context, Locale(appLanguage));
+                                  });
+                                },
+                                child: Text(localizations.settings_croatian),
                               ),
-                            ),
                           ),
                         ],
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    ),
+                    Padding(
+                      padding: EdgeInsetsGeometry.only(left: 3, right: 0, top: 0, bottom: 0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Text(localizations.settings_allowed_amp_deviation),
                           SizedBox(
-                            width: 60,
-                            child:  TextFormField(
-                              controller: _amplitudeController,
-                              keyboardType: TextInputType.number,
-                              textAlign: TextAlign.center,
-                              validator: (value) =>
-                              value == null || value.trim().isEmpty ? "-1" : null,
-                              decoration: InputDecoration(
-                                enabledBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: Colors.greenAccent,
-                                    width: 3.0,
-                                  )
-                                )
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(localizations.settings_number_of_readings_per_second),
-                          SizedBox(
-                            width: 60,
-                            child:  TextFormField(
-                              controller: _measurementsPerSecondController,
-                              keyboardType: TextInputType.numberWithOptions(signed: false, decimal: false),
-                              textAlign: TextAlign.center,
-                              validator: (value) =>
-                              value == null || value.trim().isEmpty ? "0" : null,
-                              decoration: InputDecoration(
-                                enabledBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: Colors.greenAccent,
-                                    width: 3.0,
-                                  )
-                                )
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsetsGeometry.only(left: 18, right: 0, top: 0, bottom: 0),
-              child: Text(localizations.settings_app_language),
-            ),
-            Container(
-              margin: EdgeInsetsGeometry.only(left: 0, right: 0, top: 10, bottom: 20),
-              decoration: BoxDecoration(
-                border: Border.all(
-                  width: 3,
-                  color: Colors.greenAccent,
-                ),
-                borderRadius: BorderRadius.all(Radius.circular(15)),
-              ),
-              child: Column(
-                children: [
-                  Padding(
-                    padding: EdgeInsetsGeometry.only(left: 3, right: 0, top: 0, bottom: 0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          width: 250,
-                          child:
+                            width: 250,
+                            child:
                             RadioMenuButton(
-                              value: 'hr',
+                              value: 'en',
                               groupValue: appLanguage,
                               onChanged: (selectedLanguage) {
                                 setState(() {
@@ -251,57 +280,35 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   _changeAppLanguage(context, Locale(appLanguage));
                                 });
                               },
-                              child: Text(localizations.settings_croatian),
+                              child: Text(localizations.settings_english),
                             ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsetsGeometry.only(left: 3, right: 0, top: 0, bottom: 0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          width: 250,
-                          child:
-                          RadioMenuButton(
-                            value: 'en',
-                            groupValue: appLanguage,
-                            onChanged: (selectedLanguage) {
-                              setState(() {
-                                appLanguage = selectedLanguage!;
-                                _changeAppLanguage(context, Locale(appLanguage));
-                              });
-                            },
-                            child: Text(localizations.settings_english),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: 150,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.greenAccent
+                      ),
+                      onPressed:() async {
+                        await _saveSettingsToPrefs();
+                        Navigator.pop(context);
+                      },
+                      child: Text(localizations.save),
                     ),
                   ),
                 ],
               ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(
-                  width: 150,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.greenAccent
-                    ),
-                    onPressed:() async {
-                      await _saveSettingsToPrefs();
-                      Navigator.pop(context);
-                    },
-                    child: Text(localizations.save),
-                  ),
-                ),
-              ],
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

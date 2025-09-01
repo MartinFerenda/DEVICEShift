@@ -17,6 +17,7 @@ class DeviceShift extends StatelessWidget {
       builder: (context, locale, _)
       {
         return MaterialApp(
+          debugShowCheckedModeBanner: false,
           title: 'DEVICE SHIFT',
           locale: locale,
           localizationsDelegates: [
