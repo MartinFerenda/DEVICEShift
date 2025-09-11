@@ -1,2 +1,9 @@
 # DEVICEShift
-Mobile application for measuring vibration frequencies and detecting malfunction of any device
+Mobilna aplikacija za mjerenja vibracija i detekciju pogrešnog rada uređaja  
+## Postavljanje okoline i pokretanje aplikacije
+Kako bi se aplikacija uspješno pokrenula, potrebno je odraditi određene pripremne aktivnosti na računalu. Najprije je potrebno preuzeti i instalirati razvojno kruženje Android Studio (dostupno na: https://developer.android.com/studio), kao i razvojni okvir Flutter (dostupno na: https://docs.flutter.dev/get-started/install).
+Instalacija razvojnog okruženja Android Studio odvija se na klasičan način instalacije svakog programa na računalu. Ukoliko je prisutna starija verzija, istu je moguće ukloniti tijekom pripreme za instalaciju.  
+Aplikacija je razvijana korištenjem Fluttera verzije 3.32.4, te je preporučljivo instalirati istu verziju za pokretanje ove aplikacije. Nakon preuzimanja .zip datoteke, kreira se direktorij na C: disku gdje će biti smješten Flutter. Unutar tog direktorija kreira se source direktorij, te se .zip datoteka raspakira u source direktorij. Putanju do bin direktorija unutar raspakiranog sadržaja potrebno je dodati kao dio PATH systemske varijable kako bi Flutter bio dostupan i izvan direktorija. Izvršavanjem naredbe flutter doctor može se provjeriti stanje, te eventualni nedostaci. Obično je potrebno instalirati Android SDK Command line tools u Android Studiju, te potvrditi Android licence. To se može izršiti naredbom flutter doctor --android-licenses i time je instalacija Fluttera završena.  
+U Android Studiju potrebno je instalirati određene dodatke za rad s Flutterom. U plugins dijelu potrebno je upisati i instalirati dodatak Flutter i ponovno pokrenuti Android Studio. Nakon toga se može klonirati ovaj repozitorij, izvršiti checkout naredba za granu development i dodati novu konfiguraciju pokretanja. Konačno, moguće je pokrenuti aplikaciju na uređaju.  
+
+  Ovisno o postavkama na računalu i ostalim instaliranim programima ili starijim verzijama, moguća su manja odstupanja od opisanog postupka.
