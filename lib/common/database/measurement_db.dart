@@ -30,7 +30,7 @@ class MeasurementDB implements MeasurementRepository{
 
   @override
   Future<List<Measurement>> getAllMeasurements() async {
-    final result = await _database.query(tableName, orderBy: 'favorite DESC');
+    final result = await _database.query(tableName, orderBy: 'favorite DESC, timeOfMeasurement DESC');
     return result.map((row) => Measurement.fromExternalModel(row)).toList();
   }
 
